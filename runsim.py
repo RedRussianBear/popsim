@@ -127,7 +127,7 @@ class Plot:
 
 
 class Biome:
-    def __init__(self, name, color, capacity, difficulty):
+    def __init__(self, name, capacity, difficulty):
         self.name, self.color, self.capacity, self.difficulty = name, color, capacity, difficulty
 
 
