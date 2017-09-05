@@ -47,11 +47,11 @@ def run():
         'Rainforest': Biome('Rainforest', 10, 10),
         'Forest': Biome('Forest', 15, 5),
         'Taiga': Biome('Taiga', 10, 8),
-        'Savanna': Biome('Savanna', pygame.Color(255, 152, 0), 15, 0),
-        'Grassland': Biome('Grassland', pygame.Color(230, 252, 121), 20, 0),
-        'Desert': Biome('Desert', pygame.Color(255, 213, 0), 3, 0),
-        'Tundra': Biome('Tundra', pygame.Color(151, 253, 248), 5, 2),
-        'Ice': Biome('Ice', pygame.Color(255, 255, 255), 0, 0),
+        'Savanna': Biome('Savanna', 15, 0),
+        'Grassland': Biome('Grassland', 20, 0),
+        'Desert': Biome('Desert', 3, 0),
+        'Tundra': Biome('Tundra', 5, 2),
+        'Ice': Biome('Ice', 0, 0),
     }
 
     worldmap_image = pygame.image.load('world-map.png')
