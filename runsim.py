@@ -1,5 +1,6 @@
 import sys
 import time
+from os import getcwd
 from random import randint
 
 import pygame
@@ -43,15 +44,15 @@ def run():
     global worldmap, biomes, clans, families
     biomes = {
         'Ocean': Biome('Ocean', 2, 50),
-        'Freshwater': Biome('Freshwater', 20, 2),
-        'Rainforest': Biome('Rainforest', 10, 10),
+        'Freshwater': Biome('Freshwater', 20, 1),
+        'Rainforest': Biome('Rainforest', 12, 20),
         'Forest': Biome('Forest', 15, 5),
-        'Taiga': Biome('Taiga', 10, 8),
-        'Savanna': Biome('Savanna', 15, 0),
-        'Grassland': Biome('Grassland', 20, 0),
-        'Desert': Biome('Desert', 3, 0),
+        'Taiga': Biome('Taiga', 8, 8),
+        'Savanna': Biome('Savanna', 15, 2),
+        'Grassland': Biome('Grassland', 20, 2),
+        'Desert': Biome('Desert', 2, 2),
         'Tundra': Biome('Tundra', 5, 2),
-        'Ice': Biome('Ice', 0, 0),
+        'Ice': Biome('Ice', 0, 2),
     }
 
     worldmap_image = pygame.image.load('world-map.png')
@@ -82,7 +83,9 @@ def run():
 
     screen = pygame.display.set_mode(size)
 
-    while True:
+    i = 0
+    wd = getcwd()
+    while i < 800:
         timer = time.clock()
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
@@ -104,7 +107,14 @@ def run():
 
         pygame.display.flip()
         print('Time spent doing graphics: ' + str(time.clock() - timer))
-        time.sleep(wait)
+
+        timer = time.clock()
+        pygame.image.save(screen, '%s/images/screen_grab-%04d.png' % (wd, i))
+        i += 1
+        print('Time spent saving screen: ' + str(time.clock() - timer))
+
+
+# time.sleep(wait)
 
 
 class Plot:
@@ -128,7 +138,7 @@ class Plot:
 
 class Biome:
     def __init__(self, name, capacity, difficulty):
-        self.name, self.color, self.capacity, self.difficulty = name, color, capacity, difficulty
+        self.name, self.capacity, self.difficulty = name, capacity, difficulty
 
 
 class Clan:
@@ -153,19 +163,26 @@ class Family:
         self.strength *= 1.5
         plot.improve()
 
-        if self.strength > plot.capacity:
+        if self.strength > plot.capacity and self.strength > 4:
+            max_capacity = -1
+            moveto = 0
+
             for direction in direct:
                 new_lat = self.lat + direction[0]
                 new_long = self.long + direction[1]
                 new_plot = worldmap[new_lat][new_long]
-                if new_plot.occupant == 0 and self.strength > 4:
-                    new_family = Family(self.tribe, (new_lat, new_long))
-                    new_family.strength = self.strength / 2
-                    new_family.energy = new_family.strength - new_plot.biome.difficulty
-                    self.strength /= 2
-                    families.append(new_family)
-                    new_plot.occupant = new_family
-                    break
+
+                if new_plot.occupant == 0 and new_plot.capacity > max_capacity:
+                    moveto = new_plot
+                    max_capacity = new_plot.capacity
+
+            if max_capacity > 0:
+                new_family = Family(self.tribe, (moveto.lat, moveto.long))
+                new_family.strength = self.strength / 2
+                new_family.energy = new_family.strength - moveto.biome.difficulty
+                self.strength /= 2
+                families.append(new_family)
+                moveto.occupant = new_family
 
         consume = self.strength
         energy = self.strength
